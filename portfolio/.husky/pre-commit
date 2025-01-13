@@ -1,1 +1,2 @@
+echo "Husky pre-commit hook running..."
 pnpm exec lint-staged
