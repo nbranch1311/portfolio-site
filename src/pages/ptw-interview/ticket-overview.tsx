@@ -1,4 +1,3 @@
-// pages/ptw-interview/ticket-overview.tsx
 import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft, ChevronUp, ChevronDown, House } from 'lucide-react';
@@ -28,7 +27,7 @@ const TicketOverviewPage = () => {
   const [sortColumn, setSortColumn] = useState<SortColumn>('clientName');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  // Derive the selected statuses directly from the global filter.
+  // get the selected statuses directly from the global filter.
   const selectedStatuses: string[] = state.filters.status
     ? Array.isArray(state.filters.status)
       ? state.filters.status
@@ -193,6 +192,23 @@ const TicketOverviewPage = () => {
                 }
               />
             </div>
+
+            {/* Filter by Assigned To */}
+            <div>
+              <label className="block text-sm font-medium text-black dark:text-white">
+                Filter by Assigned To:
+              </label>
+              <DropdownSelect
+                label="Assigned To"
+                options={uniqueAssignedTos.map((assignedTo) => ({
+                  value: assignedTo,
+                  label: assignedTo,
+                }))}
+                value={assignedToFilter}
+                onChange={setAssignedToFilter}
+              />
+            </div>
+
             {/* MultiSelect for Status */}
             <div>
               <label className="block text-sm font-medium text-black dark:text-white">
@@ -210,21 +226,6 @@ const TicketOverviewPage = () => {
                 variant="default"
                 animation={0}
                 maxCount={10}
-              />
-            </div>
-            {/* Filter by Assigned To */}
-            <div>
-              <label className="block text-sm font-medium text-black dark:text-white">
-                Filter by Assigned To:
-              </label>
-              <DropdownSelect
-                label="Assigned To"
-                options={uniqueAssignedTos.map((assignedTo) => ({
-                  value: assignedTo,
-                  label: assignedTo,
-                }))}
-                value={assignedToFilter}
-                onChange={setAssignedToFilter}
               />
             </div>
           </div>

@@ -1,4 +1,3 @@
-// pages/ptw-interview/ticket-detail.tsx
 import React, { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import { AppContext } from './context/app-context';
@@ -71,7 +70,6 @@ const TicketDetailView = () => {
     );
   }
 
-  // Handler for saving changes.
   const handleSave = async () => {
     setSaving(true);
     setMessage('');

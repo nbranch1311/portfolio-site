@@ -24,7 +24,6 @@ const ClientOverviewPage = () => {
   const [sortColumn, setSortColumn] = useState<SortColumn>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  // Fetch clients (and tickets) on mount.
   useEffect(() => {
     async function fetchData() {
       try {
@@ -103,7 +102,6 @@ const ClientOverviewPage = () => {
 
   return (
     <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      {/* Header with inline Back button */}
       <div className="flex items-center justify-between mb-8">
         <Button
           variant="outline"

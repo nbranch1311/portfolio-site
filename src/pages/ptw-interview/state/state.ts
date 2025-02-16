@@ -1,4 +1,3 @@
-// pages/ptw-interview/state/state.ts
 import { Client, Ticket, TicketStatus } from '../types';
 
 export interface AppState {

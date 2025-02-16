@@ -1,4 +1,3 @@
-// pages/api/clients.ts
 import fakeData from '../ptw-interview/fakeData/fakeData.json';
 import { Client } from '../ptw-interview/types';
 

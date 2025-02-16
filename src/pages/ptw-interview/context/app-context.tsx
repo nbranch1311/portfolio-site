@@ -1,4 +1,3 @@
-// AppContext.tsx
 import React, { createContext, useReducer, FC } from 'react';
 import { Action, appReducer, initialState } from '../state/state';
 

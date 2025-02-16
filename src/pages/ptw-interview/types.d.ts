@@ -1,4 +1,3 @@
-// types.ts
 export type TicketStatus = 'New' | 'In Editing' | 'Closed';
 
 export interface Client {

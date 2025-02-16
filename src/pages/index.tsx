@@ -6,7 +6,7 @@ export default function Home() {
   const { dispatch } = useContext(AppContext);
 
   const handleTicketOverviewClick = () => {
-    // Clear all filters before navigating
+    // clear all filters before navigating
     dispatch({ type: 'CLEAR_FILTERS' });
   };
 
@@ -48,7 +48,6 @@ export default function Home() {
                 Ticket Details
               </Link>
             </li>
-            {/* Additional navigation links if needed */}
           </ul>
         </nav>
       </main>

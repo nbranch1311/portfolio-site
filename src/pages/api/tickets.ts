@@ -1,4 +1,3 @@
-// pages/api/tickets.ts
 import fakeData from '../ptw-interview/fakeData/fakeData.json';
 
 export default function handler(

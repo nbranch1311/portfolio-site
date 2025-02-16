@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import * as fs from 'fs';
 
-// Fixed list of support team member names
 const supportTeamMembers = [
   'Nicholas Branch',
   'Iona Gessinger',
