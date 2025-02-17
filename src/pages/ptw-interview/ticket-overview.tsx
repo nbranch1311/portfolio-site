@@ -14,7 +14,7 @@ import {
   TableCaption,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Ticket, TicketStatus } from './types';
+import { TicketStatus, Ticket } from './types';
 
 type SortDirection = 'asc' | 'desc';
 type SortColumn = 'id' | 'clientName' | 'assignedTo' | 'status';
@@ -27,7 +27,11 @@ const TicketOverviewPage = () => {
   const [sortColumn, setSortColumn] = useState<SortColumn>('clientName');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  // get the selected statuses directly from the global filter.
+  // Pagination state
+  const itemsPerPage = 30;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Derive the selected statuses directly from the global filter.
   const selectedStatuses: string[] = state.filters.status
     ? Array.isArray(state.filters.status)
       ? state.filters.status
@@ -51,7 +55,7 @@ const TicketOverviewPage = () => {
   }, [dispatch]);
 
   // Filtering logic.
-  const filteredTickets = state.tickets.filter((ticket) => {
+  const filteredTickets = state.tickets.filter((ticket: Ticket) => {
     if (
       state.filters.clientName &&
       ticket.clientName !== state.filters.clientName
@@ -84,6 +88,13 @@ const TicketOverviewPage = () => {
     return 0;
   });
 
+  // Pagination calculations.
+  const totalPages = Math.ceil(sortedTickets.length / itemsPerPage);
+  const paginatedTickets = sortedTickets.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
   // Derive unique options.
   const uniqueStatuses = Array.from(
     new Set(state.tickets.map((ticket) => ticket.status)),
@@ -95,7 +106,7 @@ const TicketOverviewPage = () => {
     new Set(state.tickets.map((ticket) => ticket.clientName)),
   );
 
-  // Back button logic.
+  // Navigation handlers.
   const { back } = router.query;
   const handleBackClick = () => {
     if (back && typeof back === 'string') {
@@ -104,7 +115,6 @@ const TicketOverviewPage = () => {
       router.back();
     }
   };
-
   const handleHomeClick = () => {
     router.push('/');
   };
@@ -118,7 +128,6 @@ const TicketOverviewPage = () => {
       setSortDirection('asc');
     }
   };
-
   const renderSortIcon = (column: SortColumn) => {
     if (sortColumn !== column) return null;
     return sortDirection === 'asc' ? (
@@ -130,9 +139,13 @@ const TicketOverviewPage = () => {
 
   // Handler for MultiSelect change.
   const handleStatusChange = (selected: unknown[]) => {
+    // Cast to string[]; ensure our MultiSelect returns an array of strings.
+    const statuses = selected as string[];
     dispatch({
       type: 'SET_FILTERS',
-      payload: { status: selected as unknown as TicketStatus[] },
+      payload: {
+        status: statuses as TicketStatus | TicketStatus[] | undefined,
+      },
     });
   };
 
@@ -142,9 +155,17 @@ const TicketOverviewPage = () => {
     router.push('/ptw-interview/ticket-details');
   };
 
+  // Pagination controls.
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
   return (
     <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      {/* Header with inline Back button */}
+      {/* Header with Back and Home buttons */}
       <div className="flex items-center justify-between mb-8">
         <Button
           variant="outline"
@@ -192,8 +213,7 @@ const TicketOverviewPage = () => {
                 }
               />
             </div>
-
-            {/* Filter by Assigned To */}
+            {/* Dropdown for Assigned To */}
             <div>
               <label className="block text-sm font-medium text-black dark:text-white">
                 Filter by Assigned To:
@@ -208,7 +228,6 @@ const TicketOverviewPage = () => {
                 onChange={setAssignedToFilter}
               />
             </div>
-
             {/* MultiSelect for Status */}
             <div>
               <label className="block text-sm font-medium text-black dark:text-white">
@@ -229,7 +248,7 @@ const TicketOverviewPage = () => {
               />
             </div>
           </div>
-          {/* Shadcn Table */}
+          {/* Table */}
           <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
@@ -261,7 +280,7 @@ const TicketOverviewPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedTickets.length === 0 ? (
+                {paginatedTickets.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4}>
                       <div className="p-4 text-center text-sm text-black">
@@ -270,7 +289,7 @@ const TicketOverviewPage = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  sortedTickets.map((ticket) => (
+                  paginatedTickets.map((ticket: Ticket) => (
                     <TableRow key={ticket.id}>
                       <TableCell className="text-black">
                         <button
@@ -295,11 +314,33 @@ const TicketOverviewPage = () => {
               </TableBody>
               {sortedTickets.length > 0 && (
                 <TableCaption className="text-black">
-                  {sortedTickets.length} tickets found.
+                  Page {currentPage} of {totalPages} — {sortedTickets.length}{' '}
+                  tickets found.
                 </TableCaption>
               )}
             </Table>
           </div>
+          {/* Pagination Controls */}
+          {sortedTickets.length > itemsPerPage && (
+            <div className="mt-4 flex justify-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </>
       )}
     </div>

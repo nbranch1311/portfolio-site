@@ -1,4 +1,3 @@
-// pages/ptw-interview/client-overview.tsx
 import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft, ChevronUp, ChevronDown, House } from 'lucide-react';
@@ -23,6 +22,10 @@ const ClientOverviewPage = () => {
   const [loading, setLoading] = useState(true);
   const [sortColumn, setSortColumn] = useState<SortColumn>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+  // Pagination state
+  const itemsPerPage = 30;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     async function fetchData() {
@@ -61,6 +64,13 @@ const ClientOverviewPage = () => {
     return 0;
   });
 
+  // Pagination calculations.
+  const totalPages = Math.ceil(sortedClients.length / itemsPerPage);
+  const paginatedClients = sortedClients.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -79,7 +89,7 @@ const ClientOverviewPage = () => {
     );
   };
 
-  // When a client’s open ticket count is clicked, set global filters and navigate.
+  // When a client’s open ticket count is clicked.
   const handleClickOpenTickets = (clientName: string) => {
     dispatch({
       type: 'SET_FILTERS',
@@ -91,11 +101,10 @@ const ClientOverviewPage = () => {
     });
   };
 
-  // Back button always routes to home.
+  // Navigation buttons.
   const handleBackClick = () => {
     router.push('/');
   };
-
   const handleHomeClick = () => {
     router.push('/');
   };
@@ -151,7 +160,7 @@ const ClientOverviewPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedClients.length === 0 ? (
+              {paginatedClients.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3}>
                     <div className="p-4 text-center text-sm text-black">
@@ -160,7 +169,7 @@ const ClientOverviewPage = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedClients.map((client) => (
+                paginatedClients.map((client) => (
                   <TableRow key={client.id}>
                     <TableCell className="text-black">{client.id}</TableCell>
                     <TableCell className="text-black">{client.name}</TableCell>
@@ -181,11 +190,34 @@ const ClientOverviewPage = () => {
               )}
             </TableBody>
             {sortedClients.length > 0 && (
-              <TableCaption className="pl-4 flex text-black">
-                {sortedClients.length} clients found.
+              <TableCaption className="text-black">
+                Page {currentPage} of {totalPages} — {sortedClients.length}{' '}
+                clients found.
               </TableCaption>
             )}
           </Table>
+        </div>
+      )}
+      {sortedClients.length > itemsPerPage && (
+        <div className="mt-4 flex justify-center space-x-4">
+          <Button
+            variant="outline"
+            onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              currentPage < totalPages && setCurrentPage(currentPage + 1)
+            }
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+          >
+            Next
+          </Button>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
-import * as fs from 'fs';
+const { faker } = require('@faker-js/faker');
 
+// Fixed list of support team member names
 const supportTeamMembers = [
   'Nicholas Branch',
   'Iona Gessinger',
@@ -58,8 +58,8 @@ const generateTickets = (clients, numTickets = 75) => {
 };
 
 // Generate the data
-const clients = generateClients(10);
-const tickets = generateTickets(clients, 30);
+const clients = generateClients(40);
+const tickets = generateTickets(clients, 100);
 
 // Display the results log to terminal
 console.log('Clients:');
@@ -69,6 +69,7 @@ console.log('Tickets:');
 console.table(tickets);
 
 // Write the generated data to a JSON file.
+const fs = require('fs');
 const data = { clients, tickets };
 fs.writeFileSync(
   './src/pages/ptw-interview/fakeData/fakeData.json',
